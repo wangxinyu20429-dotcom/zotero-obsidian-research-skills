@@ -1,0 +1,4 @@
+interface:
+  display_name: "Zotero 水利文献精读"
+  short_description: "从本地 Zotero 批量生成水利工程论文精读与综合笔记"
+  default_prompt: "Use $zotero-hydrology-notes to read specified llm-for-zotero Markdown papers and create template-compliant intensive-reading notes."

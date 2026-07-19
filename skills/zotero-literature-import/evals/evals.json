@@ -1,0 +1,29 @@
+{
+  "skill_name": "zotero-literature-import",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Zotero 的汛限水位分类已有同 DOI 条目但没有 PDF。Connector 可以手动抓到。授权创建临时重复项、转移 PDF 并删除临时项。",
+      "expected_output": "Choose TEMP_CAPTURE_RECONCILE, verify exact identifier and PDF, preserve the canonical record, and audit cleanup.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "已有 Zotero 条目没有 PDF，帮我用 Connector 补齐，但不要创建或删除任何条目。",
+      "expected_output": "Do not create a temporary duplicate; stop at a manual/authorization gate or use a non-duplicating resolver route.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "把一篇 Zotero 中不存在的新论文连同已验证的开放 PDF 导入目标分类。",
+      "expected_output": "Use the ordinary IMPORT_WITH_PDF path, validate the PDF, and run the post-import duplicate audit.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "出版社要求机构登录才能下载 PDF，请选择学校并用 Connector 抓取。",
+      "expected_output": "Resolve the exact institution from the prompt or ZOTERO_INSTITUTION_NAME, reuse only the user's authorized browser session, pause for user-entered credentials or MFA, label provenance institutional-access, and verify the PDF before Zotero reconciliation.",
+      "files": []
+    }
+  ]
+}
