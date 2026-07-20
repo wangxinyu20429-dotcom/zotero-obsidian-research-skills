@@ -1,0 +1,4 @@
+interface:
+  display_name: "Obsidian 论文 Idea 分析"
+  short_description: "综合文献问题簇、数据、项目与任务，生成可追溯论文 Idea 文档"
+  default_prompt: "使用 $develop-obsidian-paper-ideas 结合当前 Obsidian 仓库证据分析我的研究想法，并在对应选题管理目录生成每个论文 Idea 文档。"

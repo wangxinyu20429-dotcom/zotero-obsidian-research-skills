@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import re
 import sys
+import zipfile
 from pathlib import Path
 
 
@@ -14,6 +15,10 @@ EXPECTED = {
     "zotero-literature-import",
     "zotero-hydrology-notes",
     "analyze-obsidian-research",
+    "develop-obsidian-paper-ideas",
+}
+PACKAGES = {
+    "develop-obsidian-paper-ideas": ROOT / "packages" / "develop-obsidian-paper-ideas.zip",
 }
 TEXT_SUFFIXES = {".md", ".yaml", ".yml", ".json", ".py", ".ps1", ".toml", ".txt"}
 FORBIDDEN = {
@@ -51,6 +56,40 @@ def main() -> int:
             fail(f"Invalid frontmatter: {skill_md.relative_to(ROOT)}", failures)
         elif front.group(1).strip().strip('"') != folder.name:
             fail(f"Skill name does not match folder: {folder.name}", failures)
+
+    for skill_name, package in PACKAGES.items():
+        if not package.is_file():
+            fail(f"Missing package: {package.relative_to(ROOT)}", failures)
+            continue
+        try:
+            with zipfile.ZipFile(package) as archive:
+                names = set(archive.namelist())
+        except zipfile.BadZipFile:
+            fail(f"Invalid ZIP package: {package.relative_to(ROOT)}", failures)
+            continue
+        prefix = f"{skill_name}/"
+        required = {
+            f"{prefix}SKILL.md",
+            f"{prefix}agents/openai.yaml",
+        }
+        if not required.issubset(names):
+            fail(
+                f"Package {package.relative_to(ROOT)} is missing "
+                f"{sorted(required - names)}",
+                failures,
+            )
+        unsafe = [
+            name
+            for name in names
+            if name.startswith(("/", "\\"))
+            or ".." in Path(name).parts
+            or ".git" in Path(name).parts
+        ]
+        if unsafe:
+            fail(
+                f"Unsafe package members in {package.relative_to(ROOT)}: {unsafe}",
+                failures,
+            )
 
     for path in ROOT.rglob("*"):
         if not path.is_file() or ".git" in path.parts:
