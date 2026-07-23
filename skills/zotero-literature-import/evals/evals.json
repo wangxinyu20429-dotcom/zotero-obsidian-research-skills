@@ -22,7 +22,13 @@
     {
       "id": 4,
       "prompt": "出版社要求机构登录才能下载 PDF，请选择学校并用 Connector 抓取。",
-      "expected_output": "Resolve the exact institution from the prompt or ZOTERO_INSTITUTION_NAME, reuse only the user's authorized browser session, pause for user-entered credentials or MFA, label provenance institutional-access, and verify the PDF before Zotero reconciliation.",
+      "expected_output": "Ask for or use the exact user-confirmed institution without hard-coding personal information, reuse only the user's authorized browser session, pause for user-entered credentials or MFA, label provenance institutional-access, and verify the PDF before Zotero reconciliation.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "用 OpenAlex 检索近五年的流量预报论文，先与 Zotero 查重，给我候选清单；确认后只下载选中的开放 PDF。",
+      "expected_output": "Read OPENALEX_API_KEY only from the environment, generate compatible candidate and run records, complete both candidate and Zotero audits before item-level selection, stage only selected direct OA PDFs outside the vault, and keep the paid content route disabled unless explicitly authorized.",
       "files": []
     }
   ]

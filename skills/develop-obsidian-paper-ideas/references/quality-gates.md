@@ -1,5 +1,7 @@
 # Idea quality gates
 
+Zero candidates is a valid PASS when the record names failed gates, traceable blockers and the minimum evidence action needed to reopen review. Never create a candidate merely to satisfy a quantity target.
+
 Apply these gates before recommending or writing an Idea as viable.
 
 ## Fatal gates
@@ -58,6 +60,7 @@ Do not propose a full project as the minimum validation.
 ## Final audit
 
 - Every major novelty statement names the checked prior-work boundary.
+- Every evidence row displays the complete source name and a usable DOI/publisher/Zotero/Obsidian link; no conclusion cites only an ID or locator.
 - Every data claim links to metadata or a verified file.
 - Every proposed result answers a scientific question.
 - Every main figure has one question and no duplicate purpose.

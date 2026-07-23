@@ -2,18 +2,18 @@
 
 Use this route only for lawful access under the user's own institutional entitlement. It is an authenticated retrieval route, not an access-control bypass.
 
-## Resolve the institution
+## Institution selection
 
-- Obtain the exact institution name from the current user prompt or `ZOTERO_INSTITUTION_NAME`.
-- If neither source supplies a name, stop and ask the user; never infer an institution from location, email domain, prior tasks, or browser history.
-- Require an exact chooser match and show similarly named entries for confirmation when ambiguity remains.
+- Obtain the exact institution name from the current user request or a private user-controlled local setting.
+- Do not embed a user's institution in this portable Skill, logs intended for publication, examples, or public repositories.
+- Do not guess among similarly named institutions. Ask the user to choose when the exact entry is ambiguous.
 - Prefer a publisher's official `Access through your institution`, `Institutional sign in`, Shibboleth, OpenAthens, or WAYF flow. A university WebVPN already opened and authenticated by the user is also acceptable.
 
 ## Authentication boundary
 
 1. Work in the user's normal browser through `web-access`, preserving existing tabs and login state.
 2. Create a separate task-owned tab when possible. Do not close or repurpose the user's existing WebVPN, library, or publisher tabs.
-3. On an institution chooser, select only the exact configured institution and verify the redirect belongs to the publisher, that institution, or its authorized identity/VPN service.
+3. On an institution chooser, select only the user-confirmed exact entry and verify the redirect belongs to the publisher, that institution, or its authorized identity/VPN service.
 4. If a username, password, CAPTCHA, MFA code, QR confirmation, or consent decision is required, stop and ask the user to complete it in the browser. Do not inspect DOM values, cookies, password managers, clipboard contents, or network tokens containing credentials.
 5. After the user completes authentication, continue from the publisher article landing page and use Zotero Connector so translator metadata and the licensed PDF are captured together.
 

@@ -1,127 +1,142 @@
 ---
 name: analyze-obsidian-research
-description: Read and synthesize an Obsidian research vault, especially literature, data, projects, and tasks; route a user question or suggestion to the matching research-method topic and literature problem cluster; create a missing cluster when necessary; and save a source-traceable Markdown analysis. Use for 研究问题分析, 文献问题簇补充, 近5年进展梳理, 已解决/尚未解决判断, 项目与数据可行性映射, 自问自答式科研分析, or requests to archive an analysis back into an Obsidian vault. Mark every uncertain claim as “待核验”.
+description: Read and synthesize an Obsidian research vault into source-traceable scientific problem clusters and a human-readable literature theme map, combining lightweight profiles, deep-reading notes, Zotero identities/full-text checks, literature claims, data, projects, and tasks. Use for 研究问题分析、文献问题簇、文献主题地图、主题图、近年进展、共识/冲突/缺口判断、项目与数据可行性映射, or archiving a research synthesis. Supports formal manifest-bound analysis and clearly labeled exploratory analysis; batch counts are parameters, never defaults. Produces Appendix A.2 cluster cards, deep paper-by-paper interpretations, a literature theme map, and machine-readable typed relations, and marks uncertain claims 待核验.
 ---
 
-# Obsidian 研究综合分析
+# Obsidian Research Analysis and Literature Theme Map
 
-## 目标
+## Objective
 
-围绕用户给出的问题、建议或判断，综合 Obsidian 仓库内的文献、数据、项目和任务证据，形成可追溯的问题簇分析，并保存到最匹配的研究方向目录。
+Turn a research question into scientific problem clusters and a literature theme map that can be traced to literature identities, claims, lightweight profiles, deep-reading notes, Zotero records, datasets, projects and tasks. A problem cluster is named as a scientific question or contradiction, not as a model family or buzzword.
 
-坚持“证据先于结论”。不得从文件名推断论文结论，不得把“未检索到”写成“尚无研究”，不得捏造文献、数据、结果、机制、统计量或项目状态。
+Never infer conclusions from filenames, equate “not found” with “no research”, or treat an abstract/AI summary as full-text evidence.
 
-## 开始前
+The theme map is a required synthesis layer whenever a run produces or updates more than one problem cluster. It must show how papers, problem clusters, validation constraints, local data, projects and tasks connect. A directory listing, keyword cloud or method-name grouping is not a theme map.
 
-1. 完整阅读仓库根目录适用的 `AGENTS.md` 或同类指令。
-2. 阅读 [references/vault-routing.md](references/vault-routing.md)，确定仓库根、证据源、目录路由和相关技能。
-3. 阅读 [references/analysis-template.md](references/analysis-template.md)，将其中所有必填部分保留到输出。
-4. 计算“近 5 年”的明确时间窗：以当前年份为终点，包含当前年在内的连续 5 个自然年；在文档中写出起止年份。
-5. 把用户输入拆成：问题、建议、已给事实、假设、约束和期望产出。含义不明确但不阻塞时，继续分析并标记“待核验”；只有目录选择或研究边界会发生实质改变时才询问用户。
+## Required reading
 
-## 工作流
+Before acting, read:
 
-### 1. 建立只读清单
+1. vault `AGENTS.md`;
+2. `00_系统规则/平台目录与四技能路由映射.md`;
+3. `00_系统规则/V0状态与证据规则.md`;
+4. `references/vault-routing.md`;
+5. `references/analysis-template.md`;
+6. `references/problem-cluster.schema.json`;
+7. `references/theme-relation.schema.json`;
+8. `references/theme-map.schema.json`;
+9. upstream manifest and core-candidate/evidence records when formal mode is requested.
 
-优先扫描 `文献/`、`数据/`、`项目/`、`任务/`，必要时再查看 `论文产出/` 与用户点名目录。
+## Modes
 
-可运行：
+### Formal analysis
 
-```powershell
-pwsh -NoProfile -File scripts/inventory_vault.ps1 -VaultRoot "<vault-root>" -Keywords "<主题词1>","<主题词2>"
-```
+Formal mode requires exactly one valid `input_manifest` and one `source_batch_id`.
 
-脚本只输出目录、路径、扩展名、大小和修改时间。若脚本不可用，使用 `rg --files`；Windows 下 `rg` 不可用时使用 `Get-ChildItem`。
+- analyze only literature included by the manifest;
+- verify canonical IDs and source paths before synthesis;
+- read optional expected quantities only from `expected_counts`;
+- if counts/IDs/batch disagree, stop formal output and create a blocker record;
+- do not silently broaden the corpus from vault-wide search results;
+- downstream status remains `candidate` until the required human checks occur.
 
-先按文件名、YAML、标题和 Obsidian 双链筛选候选文件，再阅读相关正文。不得为了“完整”无差别加载整个仓库。
+### Exploratory analysis
 
-### 2. 路由问题簇
+Use when there is no unique manifest or the user explicitly wants discovery.
 
-按以下顺序定位：
+- search the relevant vault scope and record the search boundary;
+- label every output `analysis_mode: exploratory`;
+- do not write into or replace the formal theme map;
+- present clusters as hypotheses and use `待核验` where evidence is incomplete.
 
-1. 确定研究主题或方法目录，如 `文献/汛限水位动态控制/`。
-2. 在其 `文献问题簇/` 下比较核心问题、簇说明、术语和用户问题。
-3. 一个簇明显匹配时，保存到该簇；多个簇并列时，选主簇并在文中列出关联簇。
-4. 没有方向簇匹配时，按 [references/vault-routing.md](references/vault-routing.md) 新建下一个 `Cnn_简短簇名/`。
-5. 连研究主题目录也不存在时，新建 `文献/<规范化研究主题>/文献问题簇/C01_<简短簇名>/`。
+## Workflow
 
-不得仅因词面相似就路由。至少核对一个核心问题或一组同义术语。无法可靠判断时使用最窄的合理目录，并在 YAML 与正文写 `路由状态: 待核验`。
+1. **Restate the scientific question.** Define target phenomenon, spatial/temporal scope and intended decision.
+2. **Choose the mode.** Record manifest path and batch in formal mode, or the search scope in exploratory mode.
+3. **Inventory before reading.** Use `scripts/inventory_vault.ps1` and exclude system/plugin/attachment/output directories.
+4. **Route the question.** Map it to problem-cluster, data, project and task paths using `references/vault-routing.md`.
+5. **Read sources in layers.** Prefer verified claim records and full-text notes; then profiles/abstracts; then project/data/task records. Preserve `evidence_status` and `review_status`.
+6. **Extract claims.** Separate author conclusion, student judgment and AI summary. Every major statement gets `claim_id`, literature ID and location. Reject upstream `result` claims that are actually cited-study statements, metric definitions, methods, future work, evidence gaps, `待回查`, `未确认`, or “不能作为本文结果”. Require a paper-owned result finding plus source context and study condition; otherwise retain only a blocker and do not use it to support a cluster.
+7. **Resolve visible sources.** For every used literature/data/project/task identity, resolve the complete title or file name and a DOI/publisher/Zotero/Obsidian link. IDs remain aliases only.
+8. **Build paper interpretations before clusters.** For every paper used by a cluster, reconstruct the study object/data, method mechanism, validation design, paper-owned findings, interpretation, limitations/uncertainty and the exact reason it changes the cluster judgment. Do not reduce this to one sentence plus a relation label.
+9. **Build clusters.** Group by shared scientific contradiction or unresolved validation need, not just shared method.
+10. **Represent relations.** Use `supports`, `limits`, `conflicts`, `conditions`, `gap_signal`, and where needed `method_for` or `needs_verification`. Every relation must carry the paper interpretation used to justify it.
+11. **Complete Appendix A.2.** Use `references/analysis-template.md`.
+12. **Build the literature theme map.** Read the complete included manifest and inventory the relevant vault. Use every included paper either as a typed theme relation or in an explicit unmapped/pending-review ledger. Show cross-cluster dependencies, evidence coverage, local data/project/task availability and unresolved relation gaps.
+13. **Write three synchronized layers.**
+    - human-readable Markdown cluster cards in the established problem-cluster asset path;
+    - `problem_clusters.jsonl` and typed relation JSONL/CSV for validation and graph use.
+    - a human-readable theme map under `20_主题地图/<主题>/`, plus its machine-readable node/edge record when required by the run.
+14. **Validate.** Run `scripts/validate_research_outputs.py` with `--theme-map` for a multi-cluster run; formal validation must fail when the manifest, named-source, paper-interpretation, theme-map, evidence-text, depth or traceability gate is missing.
+15. **Report blockers.** Do not create a confident synthesis by filling absent evidence.
 
-### 3. 建立证据账本
+## Appendix A.2 gate
 
-逐项记录真正使用过的材料，不把“发现但未读”的材料列为论据：
+Each problem cluster must contain:
 
-- 文献：本地路径或 Obsidian 双链、作者/年份/DOI（若有）、页码/章节/图表、用途、核验状态。
-- 数据：路径、格式、变量或字段、时空范围、质量限制、可支持的问题。
-- 项目：路径、目标、交付、方法、数据来源、与问题簇的关系。
-- 任务：路径、状态、依赖、截止信息（若有）、对下一步的约束。
-- 用户信息：标记为 `[用户问题]`、`[用户建议]`、`[用户事实]` 或 `[用户假设]`。
+- a question-form cluster name;
+- core contradiction;
+- supporting evidence;
+- limitations and conflicts;
+- current consensus and its evidence grade;
+- unresolved part classified as real conflict, validation gap, definition mismatch or missing material;
+- China/team relevance;
+- minimum additional evidence;
+- `high`/`medium`/`low` confidence with reason;
+- source trace: literature ID, claim ID, evidence status and reviewer.
+- source trace: complete source title, source file/link, literature ID, claim ID, evidence text or analysis, location, evidence status and reviewer;
+- at least two bounded “已解决/成立边界” statements, two unresolved statements, two testable hypotheses and one minimum-validation action when evidence supports them; otherwise explicitly record why the depth gate cannot be met;
+- a `本次实际使用的来源` ledger listing every literature, data, project and task file by name and link.
 
-沿用仓库已有证据标签：`[原文]`、`[AI概括]`、`[科研判断]`、`[导师确认]`。凡缺少原文定位、元数据冲突、因果证据不足、样本代表性不清或仅由 AI 推断的结论，必须在句内标记“待核验”。
+No cluster may be `formal` solely because a model produced it.
 
-### 4. 调用相关技能
+### Cluster depth gate
 
-先读所选技能的 `SKILL.md`，只调用完成当前问题所需的最小集合：
+A valid Appendix A.2 card is the contract header, not the whole analysis. For a corpus large enough to support synthesis, each detailed cluster file must additionally:
 
-- 发现近 5 年代表性论文：`nature-academic-search`。
-- 阅读并定位论文原文证据：`nature-reader`；已有本地 PDF 时先用本地文件，不上传未公开材料。
-- 核对作者、题名、年份、期刊、卷期页和 DOI：`nature-ref-verifier`。
-- 把已核验来源加入论述：`nature-citation`。
-- 组织研究论证、术语账本和 claim–evidence map：`nature-writing`。
-- 检查统计判断：`nature-statistics`。
-- 读取 PDF、表格或 Word：分别使用可用的 `pdf`、`spreadsheets`/`xlsx`、`documents`/`docx` 技能。
+- compare at least six relevant papers by study object, data/scale, method mechanism, validation design, result and boundary; if fewer than six sources exist, explain the corpus limitation;
+- contain a paper-by-paper evidence matrix and at least four explicit cross-paper comparisons or contradictions;
+- separate performance improvement, hydrologic understanding, extrapolation reliability, uncertainty calibration and engineering value rather than treating them as one outcome;
+- state at least three bounded resolved items, three unresolved items, three falsifiable hypotheses, two competing explanations and two minimum validation actions;
+- explain why each source supports, limits, conflicts with or conditions the cluster claim;
+- connect literature evidence to named local data, project and task files, or explicitly record that these local materials are absent;
+- target 6000–12000 Chinese-character-equivalent body text excluding YAML and source ledger.
 
-联网只用于检索公开资料，并遵循 `web-access`。不得把未公开论文、评审材料、项目材料、内部数据或仓库正文发送到公共服务。
+Depth is measured by distinct evidence and reasoning, not length alone. Repeated caveats, title lists, empty tables, method-name groupings and generic “需要进一步研究” prose fail the gate.
 
-### 5. 执行自问自答
+### Paper-by-paper interpretation gate
 
-至少提出并回答以下问题；每个回答都附证据或“待核验”：
+The `逐篇证据解读` module is the scientific core of a cluster, not a source list. For every paper represented by a typed relation:
 
-1. 用户真正要解决的决策或科学问题是什么？边界是什么？
-2. 本地证据已经支持哪些事实？哪些只是建议或假设？
-3. 各证据是否冲突？差异能否由数据、尺度、方法、约束或指标解释？
-4. 当前问题簇近 5 年有哪些代表性进展？为什么具有代表性？
-5. 每簇已经解决了什么？解决到什么条件和尺度？
-6. 每簇尚未解决什么？这是已证实的缺口，还是仅“尚未检索到”？
-7. 仓库现有数据、项目和任务能检验哪些问题？不能检验什么？
-8. 哪个最小验证能最大程度区分竞争性解释或淘汰弱选题？
-9. 哪些结论会改变研究方向，且必须优先核验？
+- write separate content-bearing subsections for `研究对象与数据`, `方法机制`, `验证与比较`, `论文自身结果`, `对本簇判断的改变`, and `边界与待核验`;
+- reconstruct the input–processing–output relation and identify the role of each component rather than listing model names;
+- report zero to many paper-owned findings. Each finding must preserve the comparison, metric/error pattern, study condition, interpretation and boundary available in the source record;
+- state how this paper differs from or complements at least one other paper in the same cluster;
+- link the complete article title, profile and deep-reading note when available; include a Zotero link or Zotero audit entry when Zotero was queried;
+- use a result blocker when no paper-owned finding survives inspection. Never turn the blocker, a method statement or a limitation into a result;
+- avoid the stock form `证据分析：一句话` + `在本簇中的作用：supports` + repeated generic boundary. A bare relation code is never an explanation.
 
-“尚未解决”必须写明适用边界和证据强度。文献覆盖不足时写“在当前已核验范围内尚未解决，待核验”，不得写成领域共识。
+Do not impose a fixed number of papers per cluster. Validate all papers actually used by that cluster. When the corpus is too small for cross-paper comparison, state the exact corpus limitation instead of padding the list.
 
-### 6. 综合每个问题簇
+### Literature theme-map gate
 
-对本次涉及的每个簇，必须包含：
+A valid human-readable theme map must:
 
-- 近 5 年代表性进展：优先 3–8 条，给出年份、进展、证据、贡献和核验状态；不足时如实列出并标记“待核验”。
-- 已解决什么：限定对象、场景、尺度、假设与证据，不写空泛结论。
-- 尚未解决什么：区分理论、方法、数据、工程验证和实施约束。
-- 与用户问题/建议的关系。
-- 与本地文献、数据、项目、任务的映射。
-- 候选科学问题或可检验假设，以及最小验证方案。
+- state the formal manifest or exploratory search scope and the observed counts actually used;
+- include all included literature identities: typed edges for papers used as evidence, and a named pending/unmapped ledger for the remainder;
+- show problem-cluster nodes, literature nodes or ledgers, validation/decision axes, and named data/project/task nodes or explicit absence records;
+- render cross-cluster dependencies as a Mermaid graph or an equivalent readable graph plus a relation matrix;
+- explain each cluster with its scientific question, current bounded understanding, decisive evidence, main conflict, minimum validation and links to the full cluster files;
+- distinguish `supports`, `limits`, `conflicts`, `conditions`, `gap_signal`, `method_for` and `needs_verification`;
+- include a complete `本次实际使用的来源` ledger containing the manifest, analysis records, profile/deep-note indexes, cluster files, typed relations, Zotero checks and relevant vault files;
+- remain `candidate` unless a mentor confirms it.
 
-不要为了凑数量牺牲证据质量。代表性由方法突破、权威综述、独立复现、工程应用或对当前问题的直接解释力支撑，不等同于“最新”。
+Reject a theme map that is only a list of topics, a keyword co-occurrence diagram, an unlinked Mermaid figure, or a copy of cluster titles. The map must make cross-source and cross-cluster reasoning visible.
 
-### 7. 保存分析
+## Output routing and preservation
 
-使用 [references/analysis-template.md](references/analysis-template.md) 生成 Markdown。
+Write detailed cluster analyses to the existing research asset path selected by the route map. Write the cross-cluster theme map and its validation artifact to `20_主题地图/<主题>/`. Never mass-migrate or overwrite existing assets. When a destination file exists, add a dated new analysis or update only with explicit authorization and a backup.
 
-- 新文件名：`分析_YYYY-MM-DD_HHmm_<短主题>.md`。
-- 保存到已选择的主问题簇目录。
-- 新建簇时同时创建最小 `簇说明.md`，仅包含编号、簇名、核心问题、关联簇和 `核验状态: 待核验`。
-- 使用相对仓库根的 Obsidian 双链，如 `[[数据/实测/…|数据集名称]]`。
-- 外部来源使用 DOI 或直接来源链接；不要链接搜索结果页。
-- 不覆盖同名文件；发生冲突时增加 `_02`、`_03`。
-- 默认不修改源文献、原始数据、项目、任务、簇总览或 Zotero。除非用户明确要求，只新增本次分析文件和必要的新簇说明。
+## Completion report
 
-## 交付前检查
-
-- 输出确实位于最匹配的问题簇；路由证据已写明。
-- 每簇都有“近 5 年代表性进展”“已解决什么”“尚未解决什么”。
-- 每个重要判断都能回溯到本地路径、原文位置或公开来源。
-- 所有不确定判断统一含“待核验”，没有用近义标签逃避标记。
-- “未发现”没有被误写为“研究空白”。
-- 来源清单只包含实际用于分析的材料。
-- 本地文献、数据、项目、任务均已检查；没有相关材料时明确写“未发现相关材料，待核验”。
-- 未改写或上传任何未授权的源材料。
-
+Report mode, manifest or search scope, included/excluded source counts, clusters created/updated, theme-map path, mapped and pending literature counts, relation counts by type, Zotero/full-text checks used, relevant data/project/task availability, evidence/review distribution, missing traces, validation result and items needing student/mentor action.

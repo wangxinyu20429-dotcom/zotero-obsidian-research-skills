@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Cross-theme paper Idea pool",
+  "type": "object",
+  "required": [
+    "pool_id",
+    "source_batch_id",
+    "status",
+    "knowledge_status",
+    "decision_status",
+    "accepted_idea_ids",
+    "entries",
+    "source_records"
+  ],
+  "properties": {
+    "pool_id": {"type": "string", "minLength": 1},
+    "source_batch_id": {"type": ["string", "null"]},
+    "status": {"const": "V0临时判断"},
+    "knowledge_status": {"const": "candidate"},
+    "decision_status": {"const": "waiting_for_mentor_decision"},
+    "accepted_idea_ids": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "entry_id",
+          "title",
+          "theme",
+          "pool_status",
+          "recommendation",
+          "score",
+          "fatal_gate_status",
+          "decisive_evidence",
+          "decisive_unknown",
+          "minimum_validation",
+          "next_action"
+        ],
+        "properties": {
+          "entry_id": {"type": "string", "minLength": 1},
+          "title": {"type": "string", "minLength": 1},
+          "theme": {"type": "string", "minLength": 1},
+          "pool_status": {"enum": ["accepted", "reserve", "rejected"]},
+          "detail_path": {"type": ["string", "null"]},
+          "recommendation": {"type": "string", "minLength": 1},
+          "score": {"type": ["number", "integer"]},
+          "fatal_gate_status": {"type": "string", "minLength": 1},
+          "decisive_evidence": {"type": "string", "minLength": 1},
+          "decisive_unknown": {"type": "string", "minLength": 1},
+          "minimum_validation": {"type": "string", "minLength": 1},
+          "next_action": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "source_records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["display_name", "source_path_or_url", "used_content"],
+        "properties": {
+          "display_name": {"type": "string", "minLength": 1},
+          "source_path_or_url": {"type": "string", "minLength": 1},
+          "used_content": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

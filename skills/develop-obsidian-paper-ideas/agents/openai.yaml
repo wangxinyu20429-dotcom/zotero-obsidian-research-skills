@@ -1,4 +1,4 @@
 interface:
   display_name: "Obsidian 论文 Idea 分析"
-  short_description: "综合文献问题簇、数据、项目与任务，生成可追溯论文 Idea 文档"
-  default_prompt: "使用 $develop-obsidian-paper-ideas 结合当前 Obsidian 仓库证据分析我的研究想法，并在对应选题管理目录生成每个论文 Idea 文档。"
+  short_description: "生成详细论文Idea并同步跨主题选题池"
+  default_prompt: "使用 $develop-obsidian-paper-ideas 结合清单约束的问题簇、主题地图、文献全文、数据、项目与任务证据，生成0—3个附录A.3候选方向；非零结果必须同步生成任务目录中的详细Idea与40_选题池中的跨主题比较。若门槛不足，明确输出暂不形成候选方向及最小补证动作。所有方向保持candidate或V0临时判断，等待导师决策。"

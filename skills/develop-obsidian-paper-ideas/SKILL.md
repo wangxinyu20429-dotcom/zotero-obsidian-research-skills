@@ -1,128 +1,108 @@
 ---
 name: develop-obsidian-paper-ideas
-description: Read an Obsidian research vault—prioritizing literature problem clusters, datasets, projects, and tasks—combine the user's research prompt with relevant Nature academic skills, evaluate paper ideas for value, novelty, feasibility, methods, risks, and publishable contribution, then create one source-traceable Markdown document per Idea in the matching task project's 03_选题管理 directory, creating the directory when missing. Use for 论文 Idea 分析, 博士选题建议, 汛限水位选题, 研究构想筛选, 选题可行性, Idea 对比排序, or requests to archive evidence-backed paper ideas into Obsidian.
+description: Read an Obsidian research vault and turn a manifest-bound theme map, verified problem clusters, literature claims, datasets, projects, and tasks into zero to three falsifiable paper-direction candidates, or explicitly conclude that no candidate should be formed. Use for 论文 Idea 分析、博士选题建议、研究构想筛选、选题可行性、Idea 对比排序, 40_选题池汇总, or archiving evidence-backed directions. Produces synchronized Appendix A.3 detail files under 任务/<项目>/03_选题管理/ and a cross-theme comparison and veto view under 40_选题池/; every direction stays candidate/V0临时判断 and waiting for mentor decision.
 ---
 
 # Develop Obsidian Paper Ideas
 
-Turn a user prompt into testable, evidence-backed paper ideas. Answer five questions for every Idea: why it matters, what exactly to study, why it is feasible, how to do it, and what publishable contribution it can produce.
+## Objective
 
-## Required reading and routing
+Create only paper directions that are traceable, falsifiable and executable. The valid output is **zero to three** candidates. Zero is preferable to a direction supported only by model enthusiasm, a vague “few studies exist” claim or unavailable data.
 
-1. Read the vault's applicable `AGENTS.md` completely.
-2. Read [references/evidence-and-routing.md](references/evidence-and-routing.md) before inventorying the vault or choosing a target directory.
-3. Read [references/idea-document-spec.md](references/idea-document-spec.md) completely before drafting; preserve every mandatory section.
-4. Read [references/quality-gates.md](references/quality-gates.md) before scoring or recommending an Idea.
-5. Use `analyze-obsidian-research` when a literature problem cluster needs a fresh source-traceable synthesis before Idea selection.
-6. Invoke only the minimum relevant Nature skills: academic discovery, full-text reading, reference verification, citation support, paper argument design, or statistics. Read each selected skill's `SKILL.md` first.
+## Required reading
 
-Keep unpublished papers, internal project material, private data, and vault content local. Use external services only for public literature discovery and verification, following `web-access`.
+Before acting, read:
+
+1. vault `AGENTS.md`;
+2. `00_系统规则/平台目录与四技能路由映射.md`;
+3. `00_系统规则/V0状态与证据规则.md`;
+4. `references/evidence-and-routing.md`;
+5. `references/idea-document-spec.md`;
+6. `references/quality-gates.md`;
+7. `references/idea-candidate.schema.json`;
+8. `references/idea-pool-spec.md`;
+9. `references/idea-pool.schema.json`;
+10. upstream manifest, current human-readable literature theme map, Appendix A.2 cluster cards, typed relations and relevant data/project/task evidence.
+
+Use `nature-ref-verifier` when source identity is disputed and `nature-writing` only after the candidate direction is established. Do not ask a writing skill to manufacture missing evidence.
+
+## Entry modes
+
+### Formal candidate development
+
+Requires:
+
+- one upstream `input_manifest` and `source_batch_id`;
+- traceable Appendix A.2 problem clusters;
+- evidence and review states preserved;
+- dataset/project/task evidence checked for actual availability;
+- no unresolved identity or batch blocker that changes the decision.
+
+If a gate fails, output the zero-direction decision record instead of candidates.
+
+### Exploratory ideation
+
+Allowed without a formal manifest, but outputs must say `development_mode: exploratory`, remain `candidate`, and cannot enter the formal candidate pool.
 
 ## Workflow
 
-### 1. Parse the request
+1. **Inventory upstream evidence.** Read the current theme map and problem clusters before general literature notes. Use the theme map to identify cross-cluster dependencies and literature still awaiting relation review; do not treat map node counts as evidence strength.
+2. **Resolve source names and links.** Expand every cluster/literature/data/project/task ID to its complete human-readable name and a DOI/publisher/Zotero/Obsidian link.
+3. **Separate facts from judgments.** Preserve author conclusion, student judgment and AI inference. Exclude any upstream “result” that is actually a cited-study statement, metric definition, method description, future work or evidence-gap note. A candidate may rely on a result claim only when it is marked as a paper-owned finding with source context and study condition; a blocker never counts as positive evidence.
+4. **Generate privately, gate publicly.** Consider alternatives, but only write candidates that pass every required gate.
+5. **Test the causal/scientific question.** A model substitution (“A+B”) is not a direction unless it isolates a scientific mechanism or boundary and defines evidence that could refute it.
+6. **Check minimum data.** Name basin, period, spatial/temporal resolution, attributes, meteorology, discharge and split design; mark unavailable items explicitly.
+7. **Check minimum experiment.** Require strong baselines, controls, extrapolation design, ablation, extremes and uncertainty where relevant.
+8. **Complete Appendix A.3.** Use `references/idea-document-spec.md`.
+9. **Apply stop conditions.** Reject or defer a candidate when the necessary data, contrast, evidence or team capacity cannot be obtained.
+10. **Rank at most three.** Ranking is provisional and cannot replace mentor judgment.
+11. **Write detailed Ideas.** Write one complete Appendix A.3 Markdown file per accepted candidate in the established task project's `03_选题管理/`; also write a machine-readable candidate JSONL. Preserve older zero-direction decisions and prior Ideas as history. A new run may supersede an older assessment only through a new dated index and explicit links.
+12. **Write the control-layer pool.** For every formal run, including a zero-candidate result, write a human-readable cross-theme comparison under `40_选题池/` and a machine-readable pool record. The pool contains ranking, veto/fatal-gate status, decisive evidence, decisive unknown, and links to detailed Ideas; it never duplicates the full sixteen-section analyses.
+13. **Synchronize status.** Detailed Ideas use `knowledge_status: candidate` and `decision_status: waiting_for_mentor_decision`; the pool uses `status: V0临时判断`. Neither layer may emit `mentor_confirmed` without an explicit dated mentor decision record.
+14. **Validate.** Run `scripts/validate_idea_contract.py` with the candidate JSONL, task Idea directory, pool Markdown and pool record.
 
-Separate the user's problem, suggestion, facts, assumptions, constraints, expected paper type, study object/region, and desired number of Ideas. If the user gives no count, develop 1–3 materially distinct Ideas rather than superficial variants.
+## Appendix A.3 gate
 
-Compute the inclusive recent-five-year window from the current year and record it explicitly. Do not treat earlier seminal work as recent progress.
+Every candidate must contain:
 
-### 2. Resolve the target
+- specific scientific question;
+- current understanding;
+- specific gap, not merely “not done”;
+- falsifiable judgment with support and refutation criteria;
+- minimum data;
+- minimum experiment;
+- innovation type: theory, method, understanding or application;
+- team fit;
+- main risks;
+- preliminary target output;
+- stop conditions;
+- `knowledge_status: candidate`;
+- `decision_status: waiting_for_mentor_decision`.
+- a source ledger in which every used cluster, paper, dataset, project and task is shown by complete name plus a usable link/path; an ID-only ledger fails the gate.
 
-Run the bundled resolver in dry-run mode:
+AI/model output never changes either status.
 
-```powershell
-python scripts/idea_vault_inventory.py resolve-target --vault-root "<vault-root>" --topic "<topic>"
-```
+## Zero-direction path
 
-For 汛限水位/动态汛限水位 topics, use `任务/汛限水位动态控制试点/03_选题管理`. Otherwise select the matching `任务/<研究项目>/03_选题管理`. If no matching task project or category exists, create the narrowest justified `任务/<规范化主题>试点/03_选题管理` only when writing is authorized:
+If no candidate passes:
 
-```powershell
-python scripts/idea_vault_inventory.py resolve-target --vault-root "<vault-root>" --topic "<topic>" --create
-```
+- state “暂不形成候选方向”;
+- list failed gates and traceable blockers;
+- specify the smallest evidence/data action that could reopen evaluation;
+- set a review owner and status;
+- do not create placeholder candidates to satisfy a count.
+- list blocking clusters and files by complete name and link, not only by cluster IDs.
+- still create/update a dated `40_选题池/` decision view that links the zero-direction record and shows why no candidate entered ranking.
 
-Confirm that the resolved absolute path remains inside the vault. Do not repurpose a loosely related project directory.
+## Dual-output contract
 
-### 3. Inventory evidence before prose
+The two output layers answer different questions:
 
-Run:
+- `任务/<项目>/03_选题管理/`: one full Idea analysis per candidate, including scientific question, closest work, minimum data, minimum experiment, risks, stop conditions and next tasks;
+- `40_选题池/`: cross-theme ranking, veto checks and mentor comparison. It must link to the detailed file and show only decision-critical fields.
 
-```powershell
-python scripts/idea_vault_inventory.py inventory --vault-root "<vault-root>" --keyword "<关键词1>" --keyword "<关键词2>"
-```
+Every candidate present in the machine candidate JSONL must appear in both layers. A pool-only direction may be shown as `reserve` or `rejected` for comparison, but it is not an accepted Appendix A.3 candidate unless a complete task-level file and candidate JSONL record exist.
 
-Prioritize, in order:
+## Preservation and completion report
 
-1. `文献/*/文献问题簇/` descriptions, analyses, literature cards, and deep reading notes;
-2. `数据/` schemas, variables, spatiotemporal coverage, quality notes, and reproducible entry points;
-3. `项目/` objectives, methods, deliverables, data rights, collaborators, and constraints;
-4. `任务/` decisions, status, dependencies, minimum validation, meeting records, and existing Ideas;
-5. `论文产出/` only when it contains relevant claims, outlines, or journal boundaries.
-
-Use the inventory only for discovery. Read the relevant source text before citing it. Never infer content or quality from filenames.
-
-### 4. Build the evidence ledger
-
-Record only materials actually read and used. Distinguish:
-
-- literature evidence and exact source anchor/DOI;
-- data existence, fields, scope, quality, access, and limitations;
-- project capability, delivery, permissions, and engineering constraints;
-- task status, decisions, dependencies, deadlines, and termination conditions;
-- user-provided questions, suggestions, facts, and assumptions.
-
-Use `[原文]`, `[AI概括]`, `[科研判断]`, `[导师确认]`, and exact text `待核验`. “Not found in the current search” is not a research gap.
-
-### 5. Develop and screen candidate Ideas
-
-Generate distinct candidates around different scientific questions, data leverage, mechanisms, methods, or engineering decisions. Reject candidates that are merely renamed duplicates, simple region substitutions without new knowledge, or method piles without a coherent paper argument.
-
-For each candidate, verify:
-
-- 2–4 testable scientific questions map to result sections;
-- hypotheses can be supported or falsified;
-- existing/obtainable/missing data are separated;
-- the minimum validation can eliminate a weak Idea quickly;
-- the closest 5–10 studies are compared when evidence allows;
-- novelty is stated relative to checked prior work;
-- risks have backups and explicit termination gates;
-- expected contribution is a claim, method, dataset/product, mechanism, or engineering decision—not workload.
-
-### 6. Use external academic skills only for identified gaps
-
-- `nature-academic-search`: discover recent representative and closest competing papers.
-- `nature-reader`: inspect full text, figures, tables, methods, limitations, and exact support.
-- `nature-ref-verifier`: verify author order, title, year, journal, pages/article number, and DOI.
-- `nature-citation`: attach verified sources to major claims.
-- `nature-writing`: construct the one-sentence argument, terminology ledger, paragraph/section map, and claim–evidence map.
-- `nature-statistics`: audit validation, sensitivity, uncertainty, sample size, and statistical reporting plans.
-
-Do not invent journal metrics or claim a source supports a statement without checking the relevant content.
-
-### 7. Write one file per Idea
-
-Use the complete template in [references/idea-document-spec.md](references/idea-document-spec.md). Default filename:
-
-```text
-Idea_YYYY-MM-DD_<简短题名>.md
-```
-
-For multiple Ideas, also create `Idea_YYYY-MM-DD_<主题>_候选索引.md` containing only ranking, links, decisive evidence, shared dependencies, and next decision. Do not merge full Idea analyses into the index.
-
-Before writing, compare normalized title, core question, and YAML `idea_id` with existing files. Never overwrite or silently update an existing Idea. Use `_02`, `_03`, or ask whether to revise when the substantive Idea already exists.
-
-### 8. Verify delivery
-
-Reread every created file and confirm:
-
-- it is inside the resolved `03_选题管理` directory;
-- all 16 mandatory analytical sections and the actual-source appendix exist;
-- major judgments have evidence or `待核验`;
-- literature, data, project, and task sources are listed with vault-relative Obsidian links;
-- the score and recommendation follow [references/quality-gates.md](references/quality-gates.md);
-- no source literature, raw data, project file, or existing Idea was modified.
-
-Report each created absolute path, the target project/category created if any, the main evidence used, decisive unknowns, and the recommended next minimum validation.
-
-## Bundled utility
-
-`scripts/idea_vault_inventory.py` is read-only except `resolve-target --create`, which creates only the resolved target directory inside the vault. It never edits evidence or Idea files.
+Do not overwrite existing idea documents or elevate them to formal. When the user explicitly requests regeneration, create a versioned new run and back up any machine file that must be replaced. Report mode, upstream manifest/cluster IDs, candidates accepted/rejected, zero-direction reason if applicable, data/experiment gaps, both output paths, validation result and decisions reserved for the mentor.

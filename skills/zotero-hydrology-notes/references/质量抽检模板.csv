@@ -1,0 +1,2 @@
+check_id,paper_id,checker,title_ok,year_ok,doi_ok,task_ok,method_ok,finding_ok,evidence_level_ok,issue,severity,action
+Q001,P-YYYY-NNNN,[复核人],yes,yes,yes,yes,yes,yes,yes,[问题],none,[处理]

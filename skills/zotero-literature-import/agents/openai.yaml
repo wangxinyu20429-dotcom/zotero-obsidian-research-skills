@@ -1,4 +1,4 @@
 interface:
   display_name: "Zotero 文献检索与入库"
-  short_description: "检索优质论文、双重查重并连同 PDF 安全保存到 Zotero"
-  default_prompt: "使用 $zotero-literature-import 检索与主题相关的高质量论文，查重后保存到我指定的 Zotero 分类并抓取 PDF。"
+  short_description: "OpenAlex检索、双重查重并连同OA PDF安全保存到Zotero"
+  default_prompt: "使用 $zotero-literature-import 通过 OpenAlex 等来源检索高质量论文，双重查重后保存到指定 Zotero 分类并抓取合法 OA PDF。"

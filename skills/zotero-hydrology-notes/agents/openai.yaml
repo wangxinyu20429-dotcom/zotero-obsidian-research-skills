@@ -1,4 +1,4 @@
 interface:
-  display_name: "Zotero 水利文献精读"
-  short_description: "从本地 Zotero 批量生成水利工程论文精读与综合笔记"
-  default_prompt: "Use $zotero-hydrology-notes to read specified llm-for-zotero Markdown papers and create template-compliant intensive-reading notes."
+  display_name: "Zotero 水利文献画像与精读"
+  short_description: "文献画像、附录A.1核心筛选与证据分级精读"
+  default_prompt: "Use $zotero-hydrology-notes to resolve stable literature identities, preserve evidence_status and review_status, create source-traceable Chinese profiles and Appendix A.1 core-candidate cards, and deep-read only the explicitly approved set. Read any quantity gate from the current input manifest; never assume a default count or ratio."

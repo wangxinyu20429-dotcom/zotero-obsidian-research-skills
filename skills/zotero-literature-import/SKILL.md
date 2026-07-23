@@ -1,6 +1,6 @@
 ---
 name: zotero-literature-import
-description: Search scholarly literature from a user topic or query, prioritize relevant high-impact SCI/SCIE journals with verifiable evidence, deduplicate the candidate list and the local Zotero library, reuse existing Zotero items by adding them to a requested collection, import new items with lawful PDFs through Zotero Connector or a safe API path, and perform a post-import duplicate audit. Use for literature discovery, 文献检索, 顶刊筛选, Zotero 查重, 批量入库, collection/folder filing, PDF 抓取, or requests to search and save papers into Zotero.
+description: Search scholarly literature from a user topic or query through OpenAlex and other authoritative sources, prioritize relevant high-impact SCI/SCIE journals only with verifiable evidence, deduplicate the candidate list and the local Zotero library, retrieve item-level approved lawful OA PDFs to external staging, reuse existing Zotero items by adding them to a requested collection, import new items through Zotero Connector or a safe API path, and perform a post-import duplicate audit. Use for OpenAlex 文献检索、开放获取 PDF 抓取、literature discovery、顶刊筛选、Zotero 查重、批量入库、collection/folder filing, or requests to search and save papers into Zotero.
 ---
 
 # Zotero Literature Import
@@ -13,10 +13,11 @@ Search first, audit twice, and mutate Zotero only from an explicit item-level pl
 - Use `nature-ref-verifier` when identity or metadata conflicts need authoritative verification.
 - Use `web-access` for all internet access and follow its browser-safety instructions.
 - Use `zotero` to probe the local library and Connector before falling back to bundled scripts.
+- Read [references/openalex-search-and-pdf.md](references/openalex-search-and-pdf.md) before OpenAlex search, API configuration, or PDF retrieval.
 - Read [references/search-and-ranking.md](references/search-and-ranking.md) before searching.
 - Read [references/zotero-write-policy.md](references/zotero-write-policy.md) before any Zotero mutation.
 - Read [references/existing-item-pdf-reconciliation.md](references/existing-item-pdf-reconciliation.md) when an existing Zotero item lacks a PDF but Zotero Connector can capture one from the article page.
-- Read [references/institutional-access.md](references/institutional-access.md) whenever a publisher PDF requires institutional authentication. Resolve the exact institution from the current prompt or `ZOTERO_INSTITUTION_NAME`; never assume one.
+- Read [references/institutional-access.md](references/institutional-access.md) whenever a publisher PDF requires institutional authentication. Obtain the exact institution from the current user request or a private user-controlled local setting; never hard-code it in the Skill or public artifacts.
 
 Do not send unpublished papers, private PDFs, or sensitive library data to public services without explicit permission.
 
@@ -30,11 +31,24 @@ Extract the research question, concepts and synonyms, date/language/document-typ
 
 Search multiple independent academic sources. Start with DOI/indexing sources and publisher records, then add discipline databases, citation indexes, and lawful web discovery. Prefer relevance and evidential fit; use journal prestige only as a secondary ranking signal.
 
+For an OpenAlex route, read the dedicated reference and use the bundled helper. Require `OPENALEX_API_KEY` from the process environment and never ask the user to paste it into chat:
+
+```powershell
+python scripts/openalex_import.py search `
+  --query "<query>" `
+  --batch-dir "<batch-dir>" `
+  --oa-only --max-results 50 --zotero-check
+```
+
+Use `openalex_candidates.json` for the standard Zotero audit. Search rank and citation count are contextual signals, not proof of quality, SCI status, journal tier, or relevance.
+
 Never invent impact factor, JCR quartile, SCI/SCIE inclusion, or “top journal” status. Record the metric/source and access date. If current authoritative evidence is inaccessible, label the ranking as a proxy such as `venue-prestige proxy`, `citation proxy`, or `domain reputation`, not as a verified impact factor.
 
 ### 3. Build a normalized candidate file
 
 Create UTF-8 JSON using the schema in [references/search-and-ranking.md](references/search-and-ranking.md). Preserve provenance for metadata, journal evidence, and PDF access. Do not include a paper merely because its venue is prestigious.
+
+The OpenAlex helper also keeps `openalex_candidates.jsonl` for guarded PDF acquisition and a separate run log/duplicate file. Do not merge API logs or secrets into the import candidate records.
 
 ### 4. Run the first duplicate audit
 
@@ -99,11 +113,23 @@ python scripts/zotero_connector_import.py import --candidate one-paper.json --ta
 
 Before saving, verify that Zotero Desktop is running and the Connector-selected target matches the requested library/collection. For an already downloaded lawful PDF, use `--pdf path.pdf`. Validate HTTP content type when downloading and require `%PDF-` magic bytes; never attach an HTML login/error page as a PDF. Resolver import can leave a metadata-only item if PDF resolution fails, so use `--resolver --accept-metadata-only-on-resolver-failure` only after disclosing and accepting that risk.
 
-When the publisher requires subscription access, follow [references/institutional-access.md](references/institutional-access.md). Obtain the exact institution name from the current prompt or `ZOTERO_INSTITUTION_NAME`; if neither is available, ask instead of guessing. At an institution chooser, require an exact match and guard against similarly named institutions. Reuse only the user's existing authorized browser session. Never request, read, store, or transmit the user's password or MFA code. If interactive login or second-factor approval is required, pause at that page and ask the user to complete it, then continue from the authenticated landing page.
+When the publisher requires subscription access, follow [references/institutional-access.md](references/institutional-access.md). At an institution chooser, use only the exact institution supplied by the user in the current task or private local configuration; do not guess among similarly named institutions. Reuse only the user's existing authorized browser session. Never request, read, store, or transmit the user's password or MFA code. If interactive login or second-factor approval is required, pause at that page and ask the user to complete it, then continue from the authenticated landing page.
 
 For an exact existing item, do not use the ordinary new-item path unless the authorized `TEMP_CAPTURE_RECONCILE` workflow applies. A successful Connector response is only a temporary capture until its PDF is reconciled into the canonical item and the temporary parent is removed.
 
 If neither an accessible PDF nor a configured resolver succeeds, report the failure. Import metadata alone only when explicitly authorized.
+
+For an approved OpenAlex OA route, download only explicitly selected work IDs to a staging directory outside Obsidian and Zotero storage:
+
+```powershell
+python scripts/openalex_import.py download `
+  --candidates "<batch-dir>/openalex_candidates.jsonl" `
+  --pdf-dir "<external-staging-dir>" `
+  --vault-root "<vault-root>" `
+  --openalex-id W1234567890 --max-files 1
+```
+
+Direct OA URLs are the default. The paid OpenAlex cached-content route stays off unless the user explicitly accepts the current per-file cost and both `--direct-or-content` and `--accept-openalex-content-cost` are present. Never report the staged file as imported until the Zotero child attachment is reread and verified.
 
 ### 8. Verify and audit again
 
@@ -122,6 +148,7 @@ Rerun `zotero_dedup.py audit` on the final manifest and audit the target collect
 ## Bundled scripts
 
 - `scripts/zotero_dedup.py`: read-only local-library status, collection listing, candidate-list deduplication, and library matching.
+- `scripts/openalex_import.py`: OpenAlex search, compatible candidate generation, early Zotero duplicate flags, and guarded item-level OA PDF staging.
 - `scripts/zotero_connector_import.py`: Connector target probe, candidate/PDF validation, and guarded new-item import.
 - `scripts/zotero_webapi_collection.py`: guarded addition of an existing synced item to a Zotero collection through the official Web API.
 

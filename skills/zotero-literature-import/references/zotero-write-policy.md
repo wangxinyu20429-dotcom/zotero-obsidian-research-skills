@@ -37,7 +37,7 @@ Use the official Zotero Web API to add an existing synced item to a collection. 
 1. Publisher-provided accessible PDF discovered from the landing page.
 2. Zotero's configured resolver or Unpaywall/Open Access route.
 3. Author manuscript in an institutional or subject repository.
-4. A user-provided or institutionally authorized downloaded PDF. For institutional access, resolve the exact institution from the current prompt or `ZOTERO_INSTITUTION_NAME`, follow `institutional-access.md`, and label the provenance `institutional-access` rather than `open-access`.
+4. A user-provided or institutionally authorized downloaded PDF. For institutional access, use only the exact institution supplied in the current task or private local configuration, follow `institutional-access.md`, and label the provenance `institutional-access` rather than `open-access`.
 
 Record the source URL and access status. If only metadata can be saved, require explicit metadata-only permission.
 

@@ -1,6 +1,12 @@
 __pycache__/
 *.py[cod]
 *.log
+*.pdf
+*.db
+*.sqlite
+*.sqlite-*
+*.bak
+*.tmp
 .env
 .env.*
 !.env.example
@@ -11,3 +17,9 @@ Thumbs.db
 test-output/
 audit.json
 candidates.json
+openalex_candidates.json
+openalex_candidates.jsonl
+openalex_duplicates.json
+openalex_run_log.json
+downloads/
+staging/

@@ -1,5 +1,76 @@
 # Paper Idea analysis document specification
 
+> 候选方向数量允许为 0。正式候选先完成附录 A.3 字段；若无候选通过门槛，改用 `zero-idea-decision-template.md`，不得凑数。
+
+```yaml
+idea_id:
+development_mode: formal
+source_batch_id:
+source_cluster_ids: []
+knowledge_status: candidate
+decision_status: waiting_for_mentor_decision
+innovation_type:
+markdown_path:
+recommendation:
+score_total:
+fatal_gates: []
+next_actions: []
+```
+
+## 附录 A.3 候选方向卡
+
+### 具体科学问题
+
+### 当前认识
+
+### 具体缺口
+
+不能只写“尚未开展”“研究较少”。
+
+### 可证伪判断
+
+- 支持条件：
+- 反驳条件：
+
+### 最小数据
+
+- 流域：
+- 时段：
+- 时空分辨率：
+- 流域属性：
+- 气象：
+- 流量：
+- 数据划分：
+
+### 最小实验
+
+- 强基线：
+- 对照：
+- 外推设计：
+- 消融：
+- 极端事件：
+- 不确定性：
+
+### 创新类型
+
+理论 / 方法 / 认识 / 应用，选择并解释。
+
+### 团队匹配
+
+### 主要风险
+
+### 目标成果
+
+学生层级和期刊层级仅作初步目标，不构成可行性证据。
+
+### 停止条件
+
+### 当前身份
+
+固定为 `candidate` + `waiting_for_mentor_decision`。
+
+---
+
 Read this file completely before drafting. Preserve all numbered sections. When evidence is absent, write `未发现相关材料，待核验`; do not delete the section.
 
 ## Required Markdown structure
@@ -226,11 +297,18 @@ idea_id: IDEA-<YYYYMMDD>-<NN>
 - 失败/终止判据：
 - 下一步行动：
 
+### 16.4 下一步任务
+
+| 顺序 | 任务 | 输入/依赖 | 负责人 | 完成判据 | 截止或复核节点 | 未完成后果 |
+|---:|---|---|---|---|---|---|
+
+“下一步行动”必须拆为可检查任务，不得只写“继续调研”“补充数据”或“开展实验”。
+
 ## 附录 A. 本次实际使用的证据
 
 ### A.1 文献
 
-| ID | 文献/双链 | DOI/原文位置 | 使用内容 | 证据标签 | 核验状态 | 局限 |
+| ID | 完整文献题名/双链 | DOI/原文位置 | 使用内容或证据分析 | 证据标签 | 核验状态 | 局限 |
 |---|---|---|---|---|---|---|
 
 ### A.2 数据
@@ -252,6 +330,8 @@ idea_id: IDEA-<YYYYMMDD>-<NN>
 
 | ID | 类型 | 内容 | 在分析中的作用 | 状态 |
 |---|---|---|---|---|
+
+所有附录来源表必须显示完整名称与可用链接。编号仅作技术别名，不能作为唯一可见来源。位置字段不能单独充当证据；必须同时写出所用内容或实质分析。
 
 ## 附录 B. 发现但尚未读取的材料
 
@@ -277,3 +357,12 @@ When more than one Idea is created, add a lightweight index with:
 - recommended order and next mentor decision.
 
 Do not duplicate the full 16-section analyses in the index.
+
+## Dual-output completion rule
+
+Every formal non-zero run must also create:
+
+- a human-readable cross-theme comparison in `40_选题池/`;
+- a machine-readable pool record conforming to `idea-pool.schema.json`.
+
+The pool is a control-layer comparison, not another abbreviated literature review. Each accepted entry links to exactly one full Idea file. Reserve or rejected pool-only entries must still include a named evidence source, fatal gate, minimum reopening validation, and next action.

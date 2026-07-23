@@ -18,9 +18,22 @@ EXPECTED = {
     "develop-obsidian-paper-ideas",
 }
 PACKAGES = {
-    "develop-obsidian-paper-ideas": ROOT / "packages" / "develop-obsidian-paper-ideas.zip",
+    skill_name: ROOT / "packages" / f"{skill_name}.zip"
+    for skill_name in EXPECTED
 }
-TEXT_SUFFIXES = {".md", ".yaml", ".yml", ".json", ".py", ".ps1", ".toml", ".txt"}
+TEXT_SUFFIXES = {
+    ".csv",
+    ".json",
+    ".jsonl",
+    ".md",
+    ".ps1",
+    ".py",
+    ".toml",
+    ".txt",
+    ".yaml",
+    ".yml",
+}
+FORBIDDEN_FILE_SUFFIXES = {".db", ".pdf", ".pyc", ".pyo", ".sqlite"}
 FORBIDDEN = {
     "Windows user profile path": re.compile(r"[A-Za-z]:\\Users\\[^<\\\s]+", re.I),
     "absolute Windows drive path": re.compile(r"\b[A-Za-z]:[\\/]"),
@@ -32,6 +45,22 @@ FORBIDDEN = {
 
 def fail(message: str, failures: list[str]) -> None:
     failures.append(message)
+
+
+def validate_text(
+    text: str,
+    display_path: str,
+    suffix: str,
+    failures: list[str],
+) -> None:
+    for label, pattern in FORBIDDEN.items():
+        if pattern.search(text):
+            fail(f"{label}: {display_path}", failures)
+    if suffix == ".py":
+        try:
+            compile(text, display_path, "exec")
+        except SyntaxError as exc:
+            fail(f"Python syntax error in {display_path}: {exc}", failures)
 
 
 def main() -> int:
@@ -64,6 +93,9 @@ def main() -> int:
         try:
             with zipfile.ZipFile(package) as archive:
                 names = set(archive.namelist())
+                archive_files = {
+                    name for name in names if name and not name.endswith("/")
+                }
         except zipfile.BadZipFile:
             fail(f"Invalid ZIP package: {package.relative_to(ROOT)}", failures)
             continue
@@ -90,11 +122,61 @@ def main() -> int:
                 f"Unsafe package members in {package.relative_to(ROOT)}: {unsafe}",
                 failures,
             )
+        forbidden_members = [
+            name
+            for name in archive_files
+            if "__pycache__" in Path(name).parts
+            or Path(name).suffix.lower() in FORBIDDEN_FILE_SUFFIXES
+            or Path(name).name.startswith(".env")
+        ]
+        if forbidden_members:
+            fail(
+                f"Forbidden package members in {package.relative_to(ROOT)}: "
+                f"{forbidden_members}",
+                failures,
+            )
+        expected_members = {
+            f"{prefix}{path.relative_to(SKILLS / skill_name).as_posix()}"
+            for path in (SKILLS / skill_name).rglob("*")
+            if path.is_file()
+        }
+        if archive_files != expected_members:
+            fail(
+                f"Package contents differ from skills/{skill_name}: "
+                f"missing={sorted(expected_members - archive_files)}, "
+                f"extra={sorted(archive_files - expected_members)}",
+                failures,
+            )
+        with zipfile.ZipFile(package) as archive:
+            for name in sorted(archive_files):
+                suffix = Path(name).suffix.lower()
+                if suffix not in TEXT_SUFFIXES:
+                    continue
+                try:
+                    text = archive.read(name).decode("utf-8-sig")
+                except UnicodeDecodeError:
+                    fail(
+                        f"Non-UTF-8 packaged text file: "
+                        f"{package.relative_to(ROOT)}!{name}",
+                        failures,
+                    )
+                    continue
+                validate_text(
+                    text,
+                    f"{package.relative_to(ROOT)}!{name}",
+                    suffix,
+                    failures,
+                )
 
     for path in ROOT.rglob("*"):
         if not path.is_file() or ".git" in path.parts:
             continue
-        if path.suffix.lower() in {".pyc", ".pyo"} or path.name == "Thumbs.db":
+        if (
+            path.suffix.lower() in FORBIDDEN_FILE_SUFFIXES
+            or path.name == "Thumbs.db"
+            or "__pycache__" in path.parts
+            or path.name.startswith(".env")
+        ):
             fail(f"Forbidden generated file: {path.relative_to(ROOT)}", failures)
             continue
         if path.suffix.lower() not in TEXT_SUFFIXES and path.name not in {"LICENSE", ".gitignore"}:
@@ -104,14 +186,12 @@ def main() -> int:
         except UnicodeDecodeError:
             fail(f"Non-UTF-8 text file: {path.relative_to(ROOT)}", failures)
             continue
-        for label, pattern in FORBIDDEN.items():
-            if pattern.search(text):
-                fail(f"{label}: {path.relative_to(ROOT)}", failures)
-        if path.suffix.lower() == ".py":
-            try:
-                compile(text, str(path), "exec")
-            except SyntaxError as exc:
-                fail(f"Python syntax error in {path.relative_to(ROOT)}: {exc}", failures)
+        validate_text(
+            text,
+            str(path.relative_to(ROOT)),
+            path.suffix.lower(),
+            failures,
+        )
 
     if failures:
         print("VALIDATION_FAILED")

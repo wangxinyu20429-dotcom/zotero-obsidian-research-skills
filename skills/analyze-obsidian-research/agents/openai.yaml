@@ -1,4 +1,4 @@
 interface:
   display_name: "Obsidian 研究综合分析"
-  short_description: "综合仓库证据、问题簇与近五年进展，生成可追溯研究分析"
-  default_prompt: "使用 $analyze-obsidian-research 读取当前 Obsidian 仓库并围绕我的问题生成可追溯的问题簇分析。"
+  short_description: "生成深度问题簇、逐篇证据解读与文献主题地图"
+  default_prompt: "使用 $analyze-obsidian-research 读取当前 Obsidian 仓库与可用 Zotero 记录。先判断是否存在唯一 input_manifest：有则只分析清单内文献，无则明确使用探索模式；为每篇关系文献重建研究对象、数据、方法、验证、论文自身结果和边界，生成附录A.2问题簇、类型化关系及覆盖全部纳入文献的可追溯主题地图。"

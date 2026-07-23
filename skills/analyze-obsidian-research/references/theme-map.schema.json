@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Human-readable Literature Theme Map Record",
+  "type": "object",
+  "required": [
+    "map_id",
+    "topic",
+    "analysis_mode",
+    "source_batch_id",
+    "knowledge_status",
+    "manifest_path",
+    "markdown_path",
+    "included_literature_count",
+    "mapped_literature_ids",
+    "pending_literature_ids",
+    "cluster_ids",
+    "nodes",
+    "edges",
+    "vault_source_files",
+    "zotero_checks"
+  ],
+  "properties": {
+    "map_id": {"type": "string", "minLength": 1},
+    "topic": {"type": "string", "minLength": 1},
+    "analysis_mode": {"enum": ["formal", "exploratory"]},
+    "source_batch_id": {"type": ["string", "null"]},
+    "knowledge_status": {"enum": ["archive", "candidate", "formal"]},
+    "manifest_path": {"type": "string", "minLength": 1},
+    "markdown_path": {"type": "string", "minLength": 1},
+    "included_literature_count": {"type": "integer", "minimum": 0},
+    "mapped_literature_ids": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "pending_literature_ids": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "cluster_ids": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["node_id", "node_type", "display_name", "path_or_url"],
+        "properties": {
+          "node_id": {"type": "string", "minLength": 1},
+          "node_type": {"enum": ["literature", "problem_cluster", "data", "project", "task", "validation_axis", "evidence_gap"]},
+          "display_name": {"type": "string", "minLength": 1},
+          "path_or_url": {"type": "string", "minLength": 1}
+        },
+        "additionalProperties": true
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source_id", "target_id", "relation_role", "evidence_text"],
+        "properties": {
+          "source_id": {"type": "string", "minLength": 1},
+          "target_id": {"type": "string", "minLength": 1},
+          "relation_role": {"enum": ["supports", "limits", "conflicts", "conditions", "gap_signal", "method_for", "needs_verification", "depends_on", "feeds", "constrained_by"]},
+          "evidence_text": {"type": "string", "minLength": 20}
+        },
+        "additionalProperties": true
+      }
+    },
+    "vault_source_files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["display_name", "path", "source_role"],
+        "properties": {
+          "display_name": {"type": "string", "minLength": 1},
+          "path": {"type": "string", "minLength": 1},
+          "source_role": {"type": "string", "minLength": 1}
+        },
+        "additionalProperties": true
+      }
+    },
+    "zotero_checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["title", "item_key", "check_status"],
+        "properties": {
+          "title": {"type": "string", "minLength": 1},
+          "item_key": {"type": "string", "minLength": 1},
+          "attachment_key": {"type": ["string", "null"]},
+          "indexed_pages": {"type": ["integer", "null"], "minimum": 0},
+          "check_status": {"enum": ["metadata_only", "attachment_listed", "indexed_fulltext_checked"]}
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

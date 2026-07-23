@@ -6,13 +6,15 @@ param(
     [string[]]$Keywords = @(),
 
     [ValidateRange(1, 100000)]
-    [int]$MaxFiles = 20000
+    [int]$MaxFiles = 20000,
+
+    [string]$OutFile
 )
 
 $ErrorActionPreference = 'Stop'
 
 $resolvedRoot = (Resolve-Path -LiteralPath $VaultRoot).Path
-$areaNames = @('文献', '数据', '项目', '任务')
+$areaNames = @('文献', '数据', '项目', '任务', '论文产出管理')
 $patterns = @($Keywords | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | ForEach-Object { [regex]::Escape($_.Trim()) })
 
 function Test-KeywordMatch {
@@ -83,4 +85,19 @@ $result = [ordered]@{
     truncated = ($totalMatchingFiles -gt $MaxFiles)
 }
 
-$result | ConvertTo-Json -Depth 6
+$json = $result | ConvertTo-Json -Depth 6
+if (-not [string]::IsNullOrWhiteSpace($OutFile)) {
+    $outPath = [System.IO.Path]::GetFullPath(
+        $(if ([System.IO.Path]::IsPathRooted($OutFile)) { $OutFile } else { Join-Path $resolvedRoot $OutFile })
+    )
+    $rootPrefix = $resolvedRoot.TrimEnd([char]92, [char]47) + [System.IO.Path]::DirectorySeparatorChar
+    if (-not $outPath.StartsWith($rootPrefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+        throw "OutFile must remain inside the vault root: $outPath"
+    }
+    $parent = Split-Path -Parent $outPath
+    if (-not (Test-Path -LiteralPath $parent -PathType Container)) {
+        New-Item -ItemType Directory -Path $parent -Force | Out-Null
+    }
+    [System.IO.File]::WriteAllText($outPath, $json + [Environment]::NewLine, [System.Text.UTF8Encoding]::new($false))
+}
+$json

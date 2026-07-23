@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Hydrology Research Paper Lightweight Profile V0.2",
+  "type": "object",
+  "required": [
+    "profile_version", "paper_id", "title", "authors", "year", "venue",
+    "journal_tier", "access_level", "review_level", "research_problem",
+    "forecast_target", "methods", "main_findings", "candidate_themes",
+    "provenance", "confidence"
+  ],
+  "properties": {
+    "profile_version": {"const": "0.2"},
+    "paper_id": {"type": "string", "minLength": 1},
+    "canonical_literature_id": {"type": "string", "minLength": 1},
+    "source_batch_id": {"type": "string", "minLength": 1},
+    "title": {"type": "string", "minLength": 1},
+    "title_normalized": {"type": "string", "minLength": 1},
+    "authors": {"type": "array", "items": {"type": "string"}},
+    "year": {"type": ["integer", "null"], "minimum": 1900, "maximum": 2100},
+    "venue": {"type": ["string", "null"]},
+    "doi": {"type": ["string", "null"]},
+    "doi_normalized": {"type": ["string", "null"]},
+    "url": {"type": ["string", "null"]},
+    "source_path": {"type": ["string", "null"]},
+    "selection_status": {"enum": ["included", "excluded", "deferred", "duplicate", "unknown"]},
+    "journal_tier": {"type": ["integer", "null"], "enum": [1, 2, 3, 4, null]},
+    "access_level": {"enum": ["metadata", "abstract", "partial_text", "fulltext", "project_material", "secondary_web"]},
+    "review_level": {"enum": ["auto_extracted", "student_checked", "cross_checked", "mentor_confirmed"]},
+    "evidence_status": {"enum": ["metadata_only", "abstract_only", "partial_text", "full_text_main", "full_text_with_supplement"]},
+    "review_status": {"enum": ["unverified", "self_checked", "cross_checked", "mentor_checked"]},
+    "knowledge_status": {"enum": ["archive", "candidate", "formal"]},
+    "research_problem": {"type": ["string", "null"]},
+    "forecast_target": {"type": ["string", "null"]},
+    "forecast_horizon": {"type": ["string", "null"]},
+    "spatial_scale": {"type": ["string", "null"]},
+    "temporal_resolution": {"type": ["string", "null"]},
+    "study_region": {"type": ["string", "null"]},
+    "datasets": {"type": "array", "items": {"type": "string"}},
+    "methods": {"type": "array", "items": {"type": "string"}},
+    "baselines": {"type": "array", "items": {"type": "string"}},
+    "metrics": {"type": "array", "items": {"type": "string"}},
+    "main_findings": {"type": "array", "maxItems": 3, "items": {"type": "string"}},
+    "claimed_innovations": {"type": "array", "maxItems": 3, "items": {"type": "string"}},
+    "limitations": {"type": "array", "maxItems": 3, "items": {"type": "string"}},
+    "candidate_themes": {"type": "array", "items": {"type": "string"}},
+    "provenance": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source_type", "locator"],
+        "properties": {
+          "source_type": {"enum": ["metadata", "abstract", "partial_text", "fulltext", "project_material", "secondary_web"]},
+          "locator": {"type": "string"},
+          "retrieved_at": {"type": ["string", "null"]}
+        },
+        "additionalProperties": false
+      }
+    },
+    "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "notes": {"type": ["string", "null"]}
+  },
+  "additionalProperties": false
+}

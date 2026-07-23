@@ -1,0 +1,2 @@
+failure_id,stage,paper_id,input,reason,error_message,action,status,owner
+F001,[检索/解析/画像/核心筛选/精读/核验],[paper_id],[输入定位],[失败原因],[错误信息],[处理动作],open,[责任人]

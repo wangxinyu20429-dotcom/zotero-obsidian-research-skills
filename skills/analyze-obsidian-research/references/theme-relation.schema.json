@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Typed Literature-Problem Relation",
+  "type": "object",
+  "required": ["relation_id", "source_id", "source_title", "source_path_or_url", "source_file", "target_id", "target_name", "relation_role", "claim_id", "evidence_text", "paper_analysis", "evidence_status", "review_status"],
+  "properties": {
+    "relation_id": {"type": "string", "minLength": 1},
+    "source_id": {"type": "string", "minLength": 1},
+    "source_title": {"type": "string", "minLength": 1},
+    "source_path_or_url": {"type": "string", "minLength": 1},
+    "source_file": {"type": "string", "minLength": 1},
+    "target_id": {"type": "string", "minLength": 1},
+    "target_name": {"type": "string", "minLength": 1},
+    "relation_role": {"enum": ["supports", "limits", "conflicts", "conditions", "gap_signal", "method_for", "needs_verification"]},
+    "claim_id": {"type": "string", "minLength": 1},
+    "evidence_text": {"type": "string", "minLength": 80},
+    "paper_analysis": {
+      "type": "object",
+      "required": [
+        "study_object_and_data", "method_mechanism", "validation_design",
+        "paper_owned_findings", "cluster_interpretation",
+        "boundary_and_verification"
+      ],
+      "properties": {
+        "study_object_and_data": {"type": "string", "minLength": 40},
+        "method_mechanism": {"type": "string", "minLength": 40},
+        "validation_design": {"type": "string", "minLength": 40},
+        "paper_owned_findings": {"type": "array"},
+        "result_blockers": {"type": "array", "items": {"type": "string"}},
+        "cluster_interpretation": {"type": "string", "minLength": 60},
+        "boundary_and_verification": {"type": "string", "minLength": 40}
+      },
+      "additionalProperties": true
+    },
+    "location": {"type": ["string", "null"]},
+    "evidence_status": {"enum": ["metadata_only", "abstract_only", "partial_text", "full_text_main", "full_text_with_supplement"]},
+    "review_status": {"enum": ["unverified", "self_checked", "cross_checked", "mentor_checked"]}
+  },
+  "additionalProperties": true
+}

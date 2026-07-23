@@ -1,5 +1,12 @@
 # Evidence and routing rules
 
+## Entry contract
+
+- Formal Idea development consumes one manifest-bound Appendix A.2 problem-cluster set and its typed relations.
+- An exploratory cluster can inspire a provisional note but cannot enter the formal candidate pool.
+- Zero candidates is a valid result. Record blockers and the minimum evidence action instead of fabricating a direction.
+- All candidates remain `candidate` and `waiting_for_mentor_decision`; no skill or model can promote them.
+
 ## Contents
 
 1. Vault and target resolution
@@ -19,8 +26,14 @@ Target rules:
 - If no task project matches, propose `任务/<规范化主题>试点/03_选题管理`.
 - Create only missing directories needed for the target. Do not create empty mirror directories under literature, data, or projects.
 - Store Idea files directly in `03_选题管理` unless an existing local taxonomy clearly requires a subcategory.
+- Store the cross-theme comparison view in `40_选题池/`. This is the platform-control view for ranking, veto checks, and mentor comparison; it is not a substitute for the detailed Idea files.
+- A formal non-zero run is incomplete until both layers exist and point to one another:
+  - `任务/<项目>/03_选题管理/`: full Idea analysis, data needs, risks, minimum validation, and next tasks;
+  - `40_选题池/`: concise cross-theme ranking, fatal gates, decisive evidence/unknowns, and links to the full analyses.
 
 When a target already contains decision records or Idea cards, read them before writing. Preserve their naming conventions where compatible, but never let a short existing card reduce the mandatory completeness of the new Idea analysis.
+
+When regenerating after new evidence or a skill revision, write a new versioned run. Preserve prior zero-direction records, mentor decisions, and Idea cards as dated history. The new pool must identify the superseded run assessment without rewriting that history.
 
 ## 2. Evidence-source priorities
 
@@ -53,6 +66,8 @@ Use project files to determine available study sites, collaborators, instrumenta
 
 Read existing Ideas, scientific-question trees, minimum validations, status trackers, meeting notes, and mentor decisions. Treat recorded decisions as internal evidence with date and owner. Identify conflicts between desired paper scope and current resources.
 
+Read the current `40_选题池/` before ranking. A pool entry may be `accepted`, `reserve`, or `rejected`, but its knowledge identity remains `candidate` and its decision remains `waiting_for_mentor_decision`. Pool-only reserve or rejected directions do not require a full Idea file, but they must name their evidence, fatal gate, minimum reopening action, and next owner/action.
+
 ### User information
 
 Label each input as `[用户问题]`, `[用户建议]`, `[用户事实]`, or `[用户假设]`. User information can define scope and priorities but does not independently prove a literature or data claim.
@@ -77,6 +92,7 @@ Do not use external search to upload or expose private vault material. Search wi
 For every used source, record:
 
 - stable ID (`L`, `D`, `P`, `T`, or `U` prefix);
+- complete article title or file name;
 - vault-relative path or DOI/direct source URL;
 - exact section, page, table, field, variable, decision date, or status used;
 - role in the Idea;
@@ -93,6 +109,8 @@ Use Obsidian links relative to the vault root:
 
 List only sources actually read and used. “Discovered but unread” materials belong in a separate follow-up list, not the evidence ledger.
 
+The visible label must be the complete name with a usable link. An ID may appear in a separate technical column, but an ID-only row is invalid. When a source supports a judgment, include a short evidence excerpt or substantive analysis; a page/section/line locator alone is insufficient.
+
 ## 5. Write safety
 
 - Resolve the final absolute target and require it to remain inside the vault.
@@ -100,3 +118,5 @@ List only sources actually read and used. “Discovered but unread” materials 
 - Do not modify problem-cluster files merely to make an Idea appear supported.
 - If creating a missing category, create only the target directory chain and report it.
 - When a user requests revisions to an existing Idea, preserve a version trail or obtain explicit overwrite authorization.
+- Never promote a direction because it ranks first. Until a dated mentor decision is recorded, detailed Ideas use `candidate` and the pool uses `V0临时判断`.
+- Keep status synchronized: every accepted pool entry must resolve to a detailed Idea whose `idea_id`, recommendation, score, fatal gates, and next actions match the machine records.

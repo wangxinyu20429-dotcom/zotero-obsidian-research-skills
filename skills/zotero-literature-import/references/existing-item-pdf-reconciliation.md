@@ -15,7 +15,7 @@ Without that authorization, stop and give the user manual Connector/merge instru
 ## Per-item procedure
 
 1. Record the canonical item key, persistent identifier, title, collection keys, notes/annotations count, tags, and current child attachments.
-2. Open the publisher/article landing page in the user's authorized browser session. Prefer the landing page over a bare PDF URL so Zotero Connector can use the site translator and authenticated attachment route. If subscription access is required, follow `institutional-access.md` and resolve the exact institution from user-supplied configuration.
+2. Open the publisher/article landing page in the user's authorized browser session. Prefer the landing page over a bare PDF URL so Zotero Connector can use the site translator and authenticated attachment route. If subscription access is required, follow `institutional-access.md` and use only the institution supplied in the current task or private local configuration.
 3. Save with Zotero Connector to the confirmed target collection. Treat the resulting parent as temporary.
 4. Reread Zotero and identify the new parent by exact DOI/PMID/PMCID/arXiv ID. Require exactly one canonical item and one new temporary item. More matches or conflicting metadata mean `REVIEW_DUPLICATE`.
 5. Verify the temporary child attachment:
